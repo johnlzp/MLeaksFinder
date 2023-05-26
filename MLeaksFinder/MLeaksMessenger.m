@@ -17,21 +17,32 @@ static __weak UIAlertView *alertView;
 @implementation MLeaksMessenger
 
 + (void)alertWithTitle:(NSString *)title message:(NSString *)message {
-    [self alertWithTitle:title message:message delegate:nil additionalButtonTitle:nil];
+    [self alertWithTitle:title message:message handler:nil additionalButtonTitle:nil];
 }
 
 + (void)alertWithTitle:(NSString *)title
                message:(NSString *)message
-              delegate:(id<UIAlertViewDelegate>)delegate
+               handler:(void (^)(UIAlertAction *action))handler
  additionalButtonTitle:(NSString *)additionalButtonTitle {
-    [alertView dismissWithClickedButtonIndex:0 animated:NO];
-    UIAlertView *alertViewTemp = [[UIAlertView alloc] initWithTitle:title
-                                                            message:message
-                                                           delegate:delegate
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:additionalButtonTitle, nil];
-    [alertViewTemp show];
-    alertView = alertViewTemp;
+//    [alertView dismissWithClickedButtonIndex:0 animated:NO];
+//    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+//    UIAlertView *alertViewTemp = [[UIAlertView alloc] initWithTitle:title
+//                                                            message:message
+//                                                           delegate:delegate
+//                                                  cancelButtonTitle:@"OK"
+//                                                  otherButtonTitles:additionalButtonTitle, nil];
+//    [alertViewTemp show];
+//    alertView = alertViewTemp;
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+        if (additionalButtonTitle == nil) {
+            [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:handler]];
+        } else {
+            [alert addAction:[UIAlertAction actionWithTitle:additionalButtonTitle style:UIAlertActionStyleDefault handler:handler]];
+        }
+        
+        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
     
     NSLog(@"%@: %@", title, message);
 }
